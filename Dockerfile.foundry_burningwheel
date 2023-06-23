@@ -1,0 +1,16 @@
+FROM node:18-alpine
+
+ENV UID=1000
+ENV GID=1000
+
+RUN deluser --remove-home node && \
+    addgroup -g $GID foundry && \
+    adduser -u $UID -G foundry -D foundry
+
+RUN chown -R foundry:foundry /usr/local 
+
+USER foundry
+
+WORKDIR /home/foundry/foundry-burningwheel
+VOLUME /home/foundry/foundry-burningwheel
+CMD ["sh", "-c", "npm install; npm run watch"]

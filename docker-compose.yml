@@ -1,0 +1,25 @@
+services:
+  foundry:
+    image: foundry_dev
+    build: .
+    restart: unless-stopped
+    ports:
+      - "9000:30000"
+    depends_on:
+      foundry-burningwheel:
+        condition: service_healthy
+    volumes:
+      - ${PWD}/foundry/resources/:/home/foundry/app/resources/
+      - ${PWD}/data/:/home/foundry/data/
+      - ${PWD}/foundry-burningwheel/release:/home/foundry/data/Data/systems/burningwheel/
+  foundry-burningwheel:
+    image: foundry_burningwheel
+    build:
+      context: .
+      dockerfile: Dockerfile.foundry_burningwheel
+    volumes:
+      - ${PWD}/foundry-burningwheel/:/home/foundry/foundry-burningwheel/
+    healthcheck:
+      test: sh -c "test -d /home/foundry/foundry-burningwheel/release"
+      interval: 2s
+      retries: 30
